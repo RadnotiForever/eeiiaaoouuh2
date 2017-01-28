@@ -30,8 +30,8 @@ if (!navigator.getUserMedia)
 
 function updateAudioInput() {
     return {
-        status: AUDIO_INPUT_STATUS_LOADING,
-        valid: false,
+        status: AUDIO_INPUT_STATUS_READY,
+        valid: true,
         lastRead: 0,
         confidence: 100,
         frequency: 440
