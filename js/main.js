@@ -81,7 +81,6 @@ function CalibrateState() {
                 lowc++;
                 lowsum += Math.log(res.frequency);
             }
-            else lc2++;
         }
         else if (time > 7000 && time < 11000) {
             res = updateAudioInput();
@@ -89,7 +88,6 @@ function CalibrateState() {
                 highc++;
                 highsum += Math.log(res.frequency);
             }
-            else hc2++;
         }
         else if (time > 12000) {
             res = updateAudioInput();
