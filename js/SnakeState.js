@@ -31,7 +31,7 @@ var SnakeState = function () {
     function getAngle() {
         var a = 0;
         var s = updateAudioInput();
-        if (s.valid) {
+        if (s.valid && s.overThreshold) {
             var logf = Math.log(s.frequency);
             a = 90 + (logf - Math.log(1000))/(Math.log(2000) - Math.log(1000)) * (-90 - 90);
         }
@@ -48,11 +48,11 @@ var SnakeState = function () {
             if(jaws.pressed("up w"))  { snakeHead.vx = 0 ; snakeHead.vy = -1;}
             if(jaws.pressed("down s"))  { snakeHead.vx = 0 ; snakeHead.vy = 1;}
 
-            //var input = getAngle();
-            //snakeHead.rotate(input);
+            var input = getAngle();
+            snakeHead.rotate(input);
             var dt = inputTimer.getDeltaTime();
-            if (dt > 25) {
-                dt = 25;
+            if (dt > 50) {
+                dt = 50;
                 inputTimer.reset();
                 var l = snakeParts.length;
                 var oldx = snakeHead.x;
@@ -74,9 +74,9 @@ var SnakeState = function () {
                 }
                 snakeParts[0].x = snakeHead.x;
                 snakeParts[0].y = snakeHead.y;
-                //input = input * 2 * Math.PI / 360;
-                //snakeHead.vx = Math.cos(input) * snakeHead.vx - Math.sin(input) * snakeHead.vy;
-                //snakeHead.vy = Math.cos(input) * snakeHead.vy + Math.sin(input) * snakeHead.vx;
+                input = input * 2 * Math.PI / 360;
+                snakeHead.vx = Math.cos(input) * snakeHead.vx - Math.sin(input) * snakeHead.vy;
+                snakeHead.vy = Math.cos(input) * snakeHead.vy + Math.sin(input) * snakeHead.vx;
 
                 snakeHead.x += Math.round(snakeHead.vx / ONE_OVER_SPEED * dt);
                 snakeHead.y += Math.round(snakeHead.vy / ONE_OVER_SPEED * dt);
