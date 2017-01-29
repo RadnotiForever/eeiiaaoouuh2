@@ -26,10 +26,14 @@ var audioInputState = {
     lastRead: 0,
     confidence: 100,
     frequency: 440,
-    overThreshold: false
+    overThreshold: false,
+    normalizedValue: 0
 };
 
-var audioInputPrivate = {};
+var audioInputPrivate = {
+    calibrationLow: Math.log(1000),
+    calibrationHigh: Math.log(1700)
+};
 
 function audioInputError(){
     audioInputState.status = AUDIO_INPUT_STATUS_UNSUPPORTED;
@@ -46,6 +50,11 @@ function convolve(buffer1, buffer2, from, to, kernel){
         }
     }
 }
+
+function calibrateAudioInput(low, high){
+    audioInputPrivate.calibrationLow = Math.log(low);
+    audioInputPrivate.calibrationHigh = Math.log(high);
+};
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext || audioInputError();
 if (!navigator.getUserMedia)
@@ -128,6 +137,7 @@ function updateAudioInput() {
         audioInputState.frequency = maxWeightIndex * audioInputPrivate.fftBinSize;
         audioInputState.confidence = maxWeight-avgWeight;
         audioInputState.overThreshold = audioInputState.confidence > AUDIO_INPUT_THRESHOLD;
+        audioInputState.normalizedValue = Math.min(Math.max((Math.log(audioInputState.frequency) - audioInputPrivate.calibrationLow) / (audioInputPrivate.calibrationHigh - audioInputPrivate.calibrationLow) * 2 - 1, -1), 1);
     }
     return audioInputState;
 }
