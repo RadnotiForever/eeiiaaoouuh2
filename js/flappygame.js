@@ -8,7 +8,7 @@ function FlappyGameState() {
     var delta;
     var deltameter = new DeltaTimeMeter();
     var player;
-    var consth = 0.1, constv = 0.01;
+    var consth = 0.1, constv = 0.4;
     var noOfObstacles=0;
 
     var obstacles = [];
@@ -56,10 +56,14 @@ function FlappyGameState() {
         audio = updateAudioInput();
 
         //update player velocity
-        if(audio.valid && audio.confidence > 20) {
-            player.v = (Math.log(audio.frequency) - Math.log(1300));
+        if(audio.valid && audio.overThreshold) {
+            player.v = -audio.normalizedValue * constv;
+            console.log("normal")
+           } else {
+            player.v=Math.max((Math.abs(player.v)-delta), 0)*Math.sign(player.v);
+            console.log("not normal")
         }
-        /*
+           /*
         if(jaws.pressed("down")) {
             player.v=10;
         } else if(jaws.pressed("up")) {
@@ -118,6 +122,8 @@ function FlappyGameState() {
                     obstacles[i].draw();            //draw (and update :( ) all obstacles
                     obstacles2[i].draw();
         }
+        console.log("draw\n");
+
 
     }
 
