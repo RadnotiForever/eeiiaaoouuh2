@@ -18,9 +18,7 @@ function MenuState() {
         jaws.on_keydown(["enter","space"],  function()  {
             console.log("enter pressed");
             if (!ready)
-                console.log(ready);
                 return;
-                console.log(index);
             if(items[index]=="Not quite flappy") {console.log("pressed flappy"); jaws.switchGameState(FlappyGameState) }
             if (items[index]=="Snakish") {console.log("pressed snake"); /*jaws.switchGameState(SnakeGameState)*/}
             if (items[index]=="Breakout thing"){
