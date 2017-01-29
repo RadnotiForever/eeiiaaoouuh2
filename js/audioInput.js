@@ -70,7 +70,6 @@ function audioInputInit2(stream){
     audioInputPrivate.mediaStream = stream;
     audioInputPrivate.analyzer = audioInputPrivate.context.createAnalyser();
     audioInputPrivate.source = audioInputPrivate.context.createMediaStreamSource(stream);
-    audioInputState.status = AUDIO_INPUT_STATUS_WORKING;
     var targetFFTSize = (2 * AUDIO_INPUT_TARGET_RESOLUTION) / AUDIO_INPUT_CUTOFF * (audioInputPrivate.context.sampleRate / 2);
     audioInputPrivate.fftSize = 1 << (Math.ceil(Math.log2(targetFFTSize))|0);
     audioInputPrivate.fftBinSize = (audioInputPrivate.context.sampleRate / 2) / (audioInputPrivate.fftSize /     2);
@@ -82,6 +81,12 @@ function audioInputInit2(stream){
     audioInputPrivate.zeroGain.value = 0.0;
     audioInputPrivate.analyzer.connect(audioInputPrivate.zeroGain);
     audioInputPrivate.zeroGain.connect(audioInputPrivate.context.destination);*/
+    startNoiseCollection();
+}
+
+function startNoiseCollection(){
+    audioInputState.status = AUDIO_INPUT_STATUS_WORKING;
+    audioInputState.valid = false;
     audioInputPrivate.noiseBuffer = new Float32Array(audioInputPrivate.lastInterestingBin);
     audioInputPrivate.noiseSamples = 0;
     audioInputPrivate.noiseCollectInterval = setInterval(collectNoiseProfiles, AUDIO_INPUT_NOISE_PROFILE_INTERVAL)
@@ -89,8 +94,8 @@ function audioInputInit2(stream){
 
 function collectNoiseProfiles(){
     var currentSample = new Float32Array(audioInputPrivate.fftSize/2);
-    if(!isFinite(currentSample[0]) || !isFinite(currentSample[100])) return;
     audioInputPrivate.analyzer.getFloatFrequencyData(currentSample);
+    if(!isFinite(currentSample[0]) || !isFinite(currentSample[100])) return;
     for(var i = 0; i < audioInputPrivate.lastInterestingBin; i++){
         audioInputPrivate.noiseBuffer[i] += currentSample[i];
     }
