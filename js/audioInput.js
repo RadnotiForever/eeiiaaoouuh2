@@ -52,8 +52,8 @@ function convolve(buffer1, buffer2, from, to, kernel){
 }
 
 function calibrateAudioInput(low, high){
-    audioInputPrivate.calibrationLow = Math.log(low);
-    audioInputPrivate.calibrationHigh = Math.log(high);
+    audioInputPrivate.calibrationLow = low;
+    audioInputPrivate.calibrationHigh = high;
 };
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext || audioInputError();

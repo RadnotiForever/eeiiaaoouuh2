@@ -37,12 +37,8 @@ function BreakoutGameState() {
         paddle = new jaws.Sprite({image: "img/paddle.png", x: 300*sc, y:460*sc,
                                     scale: sc, anchor: "center"});
         paddle.v = function() {
-            if (audio.confidence > 35) {
-                var l1 = Math.log(1000);
-                var l2 = Math.log(1700);
-                var d = Math.log(audio.frequency) - (l1+l2)/2;
-                d /= (l2-l1)/2;
-                return d*500;
+            if (audio.overThreshold) {
+                return audio.normalizedValue*500;
             }
             else {
                 return 0;

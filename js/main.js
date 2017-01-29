@@ -1,8 +1,8 @@
 function MenuState() {
-    var index = 0;
-    var items = ["Not quite flappy", "Snakish", "Breakout thing"];
-    var ready = false;
 
+    var index = 0;
+    var items = ["Not so flappy", "Snakish", "Breakout thing", "Calibration"];
+    var ready = false;
 
     this.setup = function() {
 
@@ -19,11 +19,13 @@ function MenuState() {
             console.log("enter pressed");
             if (!ready)
                 return;
-            if(items[index]=="Not quite flappy") {console.log("pressed flappy"); jaws.switchGameState(FlappyGameState) }
+            if(items[index]=="Not so flappy") {console.log("pressed flappy"); jaws.switchGameState(FlappyGameState) }
             if (items[index]=="Snakish") {console.log("pressed snake"); jaws.switchGameState(SnakeState)}
             if (items[index]=="Breakout thing"){
-            console.log("pressed breakout");
-            jaws.switchGameState(BreakoutGameState)}
+                jaws.switchGameState(BreakoutGameState)}
+            if (items[index] == "Calibration") {
+                jaws.switchGameState(CalibrateState);
+            }
         })
     }
 
@@ -37,6 +39,69 @@ function MenuState() {
             jaws.context.fillStyle =  (i == index) ? "Red" : "Black"
             jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"
             jaws.context.fillText(items[i], 30, 100 + i * 60)
+        }
+    }
+}
+
+function CalibrateState() {
+
+    var time = 0;
+    var deltameter = new DeltaTimeMeter();
+    var lowsum = 0; var lowc = 0; var highsum = 0; var highc = 0;
+    var lc2 = 0; var hc2 = 0;
+
+    this.setup = function() {
+        console.log("starting calibration")
+    }
+
+    this.update = function(){
+        time += deltameter.getDeltaTime();
+        if (time > 1000 && time < 5000) {
+            var res = updateAudioInput();
+            if (res.overThreshold) {
+                lowc++;
+                lowsum += Math.log(res.frequency);
+            }
+            else lc2++;
+        }
+        else if (time > 7000 && time < 11000) {
+            var res = updateAudioInput();
+            if (res.overThreshold) {
+                highc++;
+                highsum += Math.log(res.frequency);
+            }
+            else hc2++;
+        }
+        else if (time > 12000) {
+            if (lowc > 30 && highc > 30) {
+                var low = lowsum/lowc;
+                var high = highsum/highc;
+                calibrateAudioInput(low, high);
+            }
+            jaws.switchGameState(MenuState);
+        }
+
+    }
+
+    this.draw = function() {
+
+        jaws.context.clearRect(0,0,jaws.width,jaws.height)
+        jaws.context.font = "bold 25pt terminal";
+        jaws.context.lineWidth = 10
+        jaws.context.fillStyle = "Black"
+        jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"
+        if (time < 5000) {
+            jaws.context.fillText("Make a low pitched sound", 100, 220);
+        }
+        else if (time > 6000 && time < 11000) {
+            jaws.context.fillText("Make a high pitched sound", 100, 220);
+        }
+        else if (time > 11000) {
+            if (highc > 30 && lowc > 30) {
+                jaws.context.fillText("Calibration successful", 100, 220);
+            } else {
+                jaws.context.fillText("Calibration failed", 100, 220);
+            }
         }
     }
 }
