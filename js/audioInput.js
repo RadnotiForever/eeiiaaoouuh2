@@ -110,8 +110,8 @@ function collectNoiseProfiles(){
 function updateAudioInput() {
     if(audioInputState.status == AUDIO_INPUT_STATUS_READY){
         var sample = new Float32Array(audioInputPrivate.fftSize/2);
-        if(!isFinite(sample[0]) || !isFinite(sample[100])) return audioInputState;
         audioInputPrivate.analyzer.getFloatFrequencyData(sample);
+        if(!isFinite(sample[0]) || !isFinite(sample[100])) return audioInputState;
         var sample2 = new Float32Array(audioInputPrivate.fftSize/2);
         convolve(sample, sample2, 0, audioInputPrivate.fftSize/2, KERNEL_GAUSSIAN);
         var weightsNR = new Float32Array(audioInputPrivate.lastInterestingBin);
