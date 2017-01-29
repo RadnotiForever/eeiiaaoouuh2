@@ -32,8 +32,7 @@ var SnakeState = function () {
         var a = 0;
         var s = updateAudioInput();
         if (s.valid && s.overThreshold) {
-            var logf = Math.log(s.frequency);
-            a = 90 + (logf - Math.log(1000))/(Math.log(2000) - Math.log(1000)) * (-90 - 90);
+            a = -s.normalizedValue * 5;
         }
         return a;
     }

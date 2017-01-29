@@ -58,10 +58,8 @@ function FlappyGameState() {
         //update player velocity
         if(audio.valid && audio.overThreshold) {
             player.v = -audio.normalizedValue * constv;
-            console.log("normal")
            } else {
             player.v=Math.max((Math.abs(player.v)-delta), 0)*Math.sign(player.v);
-            console.log("not normal")
         }
            /*
         if(jaws.pressed("down")) {
@@ -122,8 +120,6 @@ function FlappyGameState() {
                     obstacles[i].draw();            //draw (and update :( ) all obstacles
                     obstacles2[i].draw();
         }
-        console.log("draw\n");
-
 
     }
 

@@ -89,6 +89,7 @@ function audioInputInit2(stream){
 
 function collectNoiseProfiles(){
     var currentSample = new Float32Array(audioInputPrivate.fftSize/2);
+    if(!isFinite(currentSample[0]) || !isFinite(currentSample[100])) return;
     audioInputPrivate.analyzer.getFloatFrequencyData(currentSample);
     for(var i = 0; i < audioInputPrivate.lastInterestingBin; i++){
         audioInputPrivate.noiseBuffer[i] += currentSample[i];
@@ -109,6 +110,7 @@ function collectNoiseProfiles(){
 function updateAudioInput() {
     if(audioInputState.status == AUDIO_INPUT_STATUS_READY){
         var sample = new Float32Array(audioInputPrivate.fftSize/2);
+        if(!isFinite(sample[0]) || !isFinite(sample[100])) return audioInputState;
         audioInputPrivate.analyzer.getFloatFrequencyData(sample);
         var sample2 = new Float32Array(audioInputPrivate.fftSize/2);
         convolve(sample, sample2, 0, audioInputPrivate.fftSize/2, KERNEL_GAUSSIAN);
@@ -134,6 +136,7 @@ function updateAudioInput() {
         }
         avgWeight /= halfLastBin - audioInputPrivate.firstInterestingBin;
         audioInputPrivate.lastSolution = maxWeightIndex;
+        audioInputState.lastRead = Date.now();
         audioInputState.frequency = maxWeightIndex * audioInputPrivate.fftBinSize;
         audioInputState.confidence = maxWeight-avgWeight;
         audioInputState.overThreshold = audioInputState.confidence > AUDIO_INPUT_THRESHOLD;
