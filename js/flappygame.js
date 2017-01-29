@@ -10,6 +10,7 @@ function FlappyGameState() {
     var player;
     var consth = 0.1, constv = 0.4;
     var noOfObstacles=0;
+    var score = 0;
 
     var obstacles = [];
     var obstacles2 = [];
@@ -55,34 +56,39 @@ function FlappyGameState() {
         //get audio sample
         audio = updateAudioInput();
 
-        //update player velocity
-        if(audio.valid && audio.overThreshold) {
-            player.v = -audio.normalizedValue * constv;
-           } else {
-            player.v=Math.max((Math.abs(player.v)-delta), 0)*Math.sign(player.v);
-        }
-           /*
-        if(jaws.pressed("down")) {
-            player.v=10;
-        } else if(jaws.pressed("up")) {
-            player.v=-10;
-        } else {
-            player.v=0;
-        }*/
+        if(player.isAlive) {
+            //update player velocity
+            if (audio.valid && audio.overThreshold) {
+                player.v = -audio.normalizedValue * constv;
+            } else {
+                player.v = Math.max((Math.abs(player.v) - delta), 0) * Math.sign(player.v);
+            }
+            /*
+             if(jaws.pressed("down")) {
+             player.v=10;
+             } else if(jaws.pressed("up")) {
+             player.v=-10;
+             } else {
+             player.v=0;
+             }*/
 
-        //update player position
-        player.y += player.v * delta * constv;
-        player.y=Math.max(player.y, 0);
-        player.y=Math.min(player.y, jaws.height-19);
+            //update player position
+            player.y += player.v * delta * constv;
+            player.y = Math.max(player.y, 0);
+            player.y = Math.min(player.y, jaws.height - 19);
+        }
+
+        for(var i = 0; i < obstacles.length; i++){
+            if(!obstacles[i].passed && (obstacles[i].x < player.x)){
+                score += 1;
+                obstacles[i].passed = true;
+                break;
+            }
+        }
 
         //collide detection & :`(
         jaws.collide(player, obstacles, function(a, b) {a.isAlive=false});
         jaws.collide(player, obstacles2, function(a, b) {a.isAlive=false});
-        if(!player.isAlive) {
-            console.log("MEGHALTÁÁÁÁL!!");
-            jaws.switchGameState(MenuState);
-        }
-
 
         //delete old obstacles outside of canvas
         while (OutOfCanvas(obstacles[0])) {
@@ -105,6 +111,9 @@ function FlappyGameState() {
         /*console.log('obstacles:')
         console.log(obstacles[0].x)
         console.log(obstacles[obstacles.length-1].x)*/
+        if(!player.isAlive && jaws.pressed("enter")){
+            newScore("flaps", score);
+        }
 
     }
 
@@ -115,12 +124,25 @@ function FlappyGameState() {
         jaws.clear();                               //clear canvas
         player.draw();                              //draw player
         for (i=0; i<(obstacles.length); i++) {
-                    obstacles[i].x -= delta*consth;
-                    obstacles2[i].x -= delta*consth;
-                    obstacles[i].draw();            //draw (and update :( ) all obstacles
-                    obstacles2[i].draw();
+            if(player.isAlive) {
+                obstacles[i].x -= delta * consth;
+                obstacles2[i].x -= delta * consth;
+            }
+            obstacles[i].draw();            //draw (and update :( ) all obstacles
+            obstacles2[i].draw();
         }
-
+        jaws.context.fillStyle = "Red";
+        jaws.context.font = "bold 25pt terminal";
+        jaws.context.lineWidth = 10;
+        jaws.context.textAlign = "center";
+        jaws.context.strokeStyle =  "rgba(200,200,200,0.0)";
+        jaws.context.fillText(score, jaws.width/2, jaws.height/6);
+        if(!player.isAlive){
+            jaws.context.fillText("You died!", jaws.width/2, jaws.height/3);
+            jaws.context.fillText("Press enter to continue!", jaws.width/2, 2/3*jaws.height);
+            jaws.context.font = "bold 10pt terminal";
+            jaws.context.fillText("MEGHALTÁÁÁÁL!!", jaws.width/2, (5/12)*jaws.height);
+        }
     }
 
 
