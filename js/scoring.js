@@ -12,11 +12,11 @@ function ScoreBoardState() {
     var scoreboard = {}
 
 
-    var place, showingscore;
+    var place = 0, showingscore;
 
     this.setup = function() {
         try {_temp = localStorage.scoreboard;
-        scoreboard = JSON.Parse(_temp);
+        scoreboard = JSON.parse(_temp);
         } catch (e) {
             scoreboard = {
                 "breakout":     [],
@@ -24,18 +24,17 @@ function ScoreBoardState() {
                 "flaps":        []
              }
         }
-        for(var i=0; i<scoreboard.game.length;i++) {
-            if(score>scoreboard.game[i][0]) {
-                place = i;
+        console.log(scoreboard);
+        for(place=0; place<scoreboard[game].length;place++) {
+            if(score>scoreboard[game][place][0]) {
                 break;
             }
         }
-        scoreboard.game[place][0] = score;
-        scoreboard.game[place][1] = user;
-        scoreboard.game.splice(place, 0, [score, user]);
-        _temp = JSON.stringify(scoreboard);
-        localStorage.scoreboard = scoreboard;
-        alert("Congratulations, you've got the " + ordinal(place) + " place!")
+        /*scoreboard[game][place][0] = score;
+        scoreboard[game][place][1] = user;*/
+        scoreboard[game].splice(place, 0, [score, user]);
+        localStorage.scoreboard = JSON.stringify(scoreboard);
+        alert("Congratulations, you've got the " + ordinal(place+1) + " place!")
     }
 
 
@@ -47,12 +46,14 @@ function ScoreBoardState() {
 
     this.draw = function() {
         if(!showingscore) {
+            jaws.clear();
+            jaws.context.textAlign = "left";
             jaws.context.font = "bold 25pt terminal";
             jaws.context.lineWidth = 10;
             jaws.context.strokeStyle =  "rgba(200,200,200,0.0)";
             jaws.context.fillStyle = "Black";
-            for(var i=0;i<Math.min(5, scoreboard.game.length);i++){
-                jaws.context.fillText((i + ". " + scoreboard.game[i][1] / " " + scoreboard.game[i][0]), jaws.width/5, 60+i*60)
+            for(var i=0;i<Math.min(5, scoreboard[game].length);i++){
+                jaws.context.fillText(((i + 1) + ". " + scoreboard[game][i][1] + " " + scoreboard[game][i][0]), jaws.width/5, 60+i*60)
             }
             showingscore = true;
         }

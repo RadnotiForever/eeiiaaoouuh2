@@ -31,6 +31,7 @@ function MenuState() {
 
     this.draw = function() {
         jaws.context.clearRect(0,0,jaws.width,jaws.height);
+        jaws.context.textAlign = "left";
         jaws.context.font = "bold 25pt terminal";
         jaws.context.lineWidth = 10;
         jaws.context.strokeStyle =  "rgba(200,200,200,0.0)";
@@ -111,6 +112,7 @@ function CalibrateState() {
 
         jaws.context.clearRect(0,0,jaws.width,jaws.height);
         jaws.context.font = "bold 25pt terminal";
+        jaws.context.textAlign = "left";
         jaws.context.lineWidth = 10;
         jaws.context.fillStyle = "Black";
         jaws.context.strokeStyle =  "rgba(200,200,200,0.0)";
