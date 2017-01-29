@@ -9,6 +9,8 @@ var SnakeState = function () {
     snakeHead.vy = 0;
     var pickup = new jaws.Sprite({image:"img/ball.png", x:Math.floor(Math.random() * 600), y:Math.floor(Math.random() * 480)});
     var snakeParts = [snakePart(0,240)];
+    var eaten = 0;
+    var score;
 
     function snakePart(x, y){
         return new jaws.Sprite({image:"img/snakepart2.png", x:x, y:y, anchor:"center"});
@@ -61,6 +63,8 @@ var SnakeState = function () {
                 for (var v2 = 3; v2 < l; ++v2) {
                     if (collides(snakeParts[v2])) {
                         gameOver = true;
+                        score = 20*eaten;
+                        jaws.on_keydown("esc", function() {} );
                     }
                 }
                 snakeHead.x = oldx;
@@ -90,10 +94,11 @@ var SnakeState = function () {
                     pickup.y = Math.floor(Math.random() * 480);
                     snakeParts.push(snakePart(lastx, lasty));
                     n += 8;
+                    eaten++;
                 });
             }
-        } else if (jaws.pressedWithoutRepeat("space")) {
-            jaws.swichGameState(MenuState);
+        } else if (jaws.pressedWithoutRepeat("enter")) {
+            newScore("snake", score);
         }
     };
 
@@ -104,6 +109,16 @@ var SnakeState = function () {
         }
         snakeHead.draw();
         pickup.draw();
+        if (gameOver) {
+            jaws.context.clearRect(0,0,jaws.width,jaws.height)
+            jaws.context.font = "bold 25pt terminal";
+            jaws.context.lineWidth = 10
+            jaws.context.fillStyle = "Red"
+            jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"
+            jaws.context.fillText("Game over :(", 300, 220);
+            jaws.context.fillText("Score: " + score, 300, 280);
+        }
+
     };
 
     this.setup = function() {

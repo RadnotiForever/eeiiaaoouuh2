@@ -6,12 +6,15 @@ function BreakoutGameState() {
     var ballspeed = 250;
     var paddle;
     var deltameter = new DeltaTimeMeter();
+    var startTime;
+    var score;
 
     var blocks = [];
     var audio;
 
     this.setup = function() {
         console.log("start breakout")
+        startTime = Date.now();
         jaws.on_keydown("esc",  function() { jaws.switchGameState(MenuState) })
         sc = jaws.width / 600;
         ball = new jaws.Sprite({image: "img/ball.png", x: 300*sc, y:300*sc, scale: sc, anchor: "center"})
@@ -172,17 +175,26 @@ function BreakoutGameState() {
         paddle.draw();
         jaws.draw(blocks);
         jaws.context.font = "bold 25pt terminal";
-        jaws.context.lineWidth = 10
-        ;
+        jaws.context.lineWidth = 10;
         jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"
         if (blocks.length == 0)
         {
-            jaws.context.fillStyle = "Red"
-            jaws.context.fillText("You win!", 220*sc, 250*sc);
+            if(score === undefined){
+                score = Math.round(1e8/(Date.now() - startTime)) | 0;
+            }
+            jaws.context.fillStyle = "Red";
+            jaws.context.textAlign = "center";
+            jaws.context.fillText("You win!", 300*sc, 250*sc);
+            jaws.context.fillText("Score: " + score, 300*sc, 300*sc);
+            jaws.context.fillText("Press enter to continue!", 300*sc, 400*sc);
+            if(jaws.pressed("enter")){
+                newScore("breakout", score);
+            }
         }
         else if (ball.y > 480*sc) {
+            jaws.context.textAlign = "center";
             jaws.context.fillStyle = "Black"
-            jaws.context.fillText("You lose... :(", 220*sc, 250*sc);
+            jaws.context.fillText("You lose... :(", 300*sc, 250*sc);
         }
 
     }
