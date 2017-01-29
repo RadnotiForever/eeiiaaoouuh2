@@ -48,7 +48,7 @@ function CalibrateState() {
     var time = 0;
     var deltameter = new DeltaTimeMeter();
     var lowsum = 0; var lowc = 0; var highsum = 0; var highc = 0;
-    var lc2 = 0; var hc2 = 0;
+    var gotNoise = false;
 
     this.setup = function() {
         console.log("starting calibration")
@@ -73,12 +73,18 @@ function CalibrateState() {
             else hc2++;
         }
         else if (time > 12000) {
-            if (lowc > 30 && highc > 30) {
-                var low = lowsum/lowc;
-                var high = highsum/highc;
-                calibrateAudioInput(low, high);
+            var res = updateAudioInput();
+            if (!gotNoise){
+                if (lowc > 30 && highc > 30) {
+                    var low = lowsum/lowc;
+                    var high = highsum/highc;
+                    calibrateAudioInput(low, high);
+                }
+                gotNoise = true;
+                startNoiseCollection();
+            } else if (res.valid) {
+                jaws.switchGameState(MenuState);
             }
-            jaws.switchGameState(MenuState);
         }
 
     }
@@ -96,12 +102,15 @@ function CalibrateState() {
         else if (time > 6000 && time < 11000) {
             jaws.context.fillText("Make a high pitched sound", 100, 220);
         }
-        else if (time > 11000) {
+        else if (time > 11000 && time < 12000) {
             if (highc > 30 && lowc > 30) {
                 jaws.context.fillText("Calibration successful", 100, 220);
             } else {
                 jaws.context.fillText("Calibration failed", 100, 220);
             }
+        }
+        else if (time > 13000) {
+            jaws.context.fillText("Sampling background noise...", 40, 220);
         }
     }
 }
