@@ -6,9 +6,9 @@ function MenuState() {
 
     this.setup = function() {
 
-        canvas = document.getElementById("canvas"); //resize canwas to full"screen"
+        /*canvas = document.getElementById("canvas"); //resize canwas to full"screen"
         canvas.width = document.body.clientWidth;
-        canvas.height = document.body.clientHeight;
+        canvas.height = document.body.clientHeight;*/
 
 
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
@@ -18,8 +18,9 @@ function MenuState() {
         jaws.on_keydown(["enter","space"],  function()  {
             console.log("enter pressed");
             if (!ready)
+                console.log(ready);
                 return;
-
+                console.log(index);
             if(items[index]=="Not quite flappy") {console.log("pressed flappy"); jaws.switchGameState(FlappyGameState) }
             if (items[index]=="Snakish") {console.log("pressed snake"); /*jaws.switchGameState(SnakeGameState)*/}
             if (items[index]=="Breakout thing"){
@@ -50,6 +51,7 @@ function MenuState() {
 window.onload = function() {
     jaws.assets.add("img/flappy_player.png");
     jaws.assets.add("img/flappy_obstacle.png");
+    jaws.assets.add("img/flappy_obstacle2.png");
     jaws.assets.add("img/ball.png");
     jaws.assets.add("img/paddle.png");
     jaws.assets.add("img/block.png");
