@@ -57,7 +57,7 @@ function FlappyGameState() {
 
         //update player velocity
         if(audio.valid && audio.confidence > 20) {
-            player.v = (Math.log(audio.frequency) - Math.log(1300);
+            player.v = (Math.log(audio.frequency) - Math.log(1300));
         }
         /*
         if(jaws.pressed("down")) {

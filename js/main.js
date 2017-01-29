@@ -17,10 +17,11 @@ function MenuState() {
         jaws.on_keydown(["up","w"],         function()  { index--; if(index < 0) {index=0} } )
         jaws.on_keydown(["enter","space"],  function()  {
             console.log("enter pressed");
-            if (!ready)
+            if (!ready) {
                 console.log(ready);
                 return;
                 console.log(index);
+            }
             if(items[index]=="Not quite flappy") {console.log("pressed flappy"); jaws.switchGameState(FlappyGameState) }
             if (items[index]=="Snakish") {console.log("pressed snake"); jaws.switchGameState(SnakeState)}
             if (items[index]=="Breakout thing"){
