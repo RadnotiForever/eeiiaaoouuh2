@@ -35,6 +35,7 @@ function MenuState() {
         for(var i=0; items[i]; i++) {
             // jaws.context.translate(0.5, 0.5)
             jaws.context.font = "bold 25pt terminal";
+            jaws.context.textAlign = "left";
             jaws.context.lineWidth = 10
             jaws.context.fillStyle =  (i == index) ? "Red" : "Black"
             jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"
@@ -93,6 +94,7 @@ function CalibrateState() {
 
         jaws.context.clearRect(0,0,jaws.width,jaws.height)
         jaws.context.font = "bold 25pt terminal";
+        jaws.context.textAlign = "left";
         jaws.context.lineWidth = 10
         jaws.context.fillStyle = "Black"
         jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"

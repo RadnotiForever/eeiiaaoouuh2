@@ -34,8 +34,8 @@ function BreakoutGameState() {
             if (ball.y < ball.radius) {
                 ball.vy *= -1; ball.y = ball.radius;
             }
-            if (ball.y+ball.radius > 480 * sc)
-            {ball.y = 480*sc-ball.radius; ball.vy *= -1}
+            /*if (ball.y+ball.radius > 480 * sc)
+            {ball.y = 480*sc-ball.radius; ball.vy *= -1}*/
         }
         paddle = new jaws.Sprite({image: "img/paddle.png", x: 300*sc, y:460*sc,
                                     scale: sc, anchor: "center"});
@@ -195,6 +195,9 @@ function BreakoutGameState() {
             jaws.context.textAlign = "center";
             jaws.context.fillStyle = "Black"
             jaws.context.fillText("You lose... :(", 300*sc, 250*sc);
+            if(jaws.pressed("enter")){
+                jaws.switchGameState(MenuState);
+            }
         }
 
     }
