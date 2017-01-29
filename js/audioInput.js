@@ -14,6 +14,9 @@ var AUDIO_INPUT_CUTOFF = 11025;
 var AUDIO_INPUT_MINFREQ = 65; // save the americans
 var AUDIO_INPUT_NOISE_PROFILE_INTERVAL = 50;
 var AUDIO_INPUT_NOISE_PROFILE_COUNT = 100;
+var KERNEL_GAUSSIAN = [.006, .061, .242, .382, .242, .061, .006];
+var AUDIO_INPUT_CONSERVATIVE_COEFF = 99999;
+var AUDIO_INPUT_CONSERVATIVE_SIGMA = 200;
 var PHI = (1 + Math.sqrt(2)) / 2;
 
 var audioInputState = {
@@ -30,6 +33,16 @@ function audioInputError(){
     audioInputState.status = AUDIO_INPUT_STATUS_UNSUPPORTED;
     throw "Some features are missing from your browser";
     return false;
+}
+
+function convolve(buffer1, buffer2, from, to, kernel){
+    var offset = -((kernel.length/2)|0);
+    for(var i = from; i < to; i++){
+        for(var j = 0; j < kernel.length; j++){
+            if(i+j+offset < 0 || i + j + offset >= buffer1.length) continue;
+            buffer2[i] += buffer1[i + j + offset] * kernel[j];
+        }
+    }
 }
 
 window.AudioContext = window.AudioContext || window.webkitAudioContext || audioInputError();
@@ -72,6 +85,9 @@ function collectNoiseProfiles(){
     if(++audioInputPrivate.noiseSamples >= AUDIO_INPUT_NOISE_PROFILE_COUNT) {
         for (var i = 0; i < audioInputPrivate.lastInterestingBin; i++)
             audioInputPrivate.noiseBuffer[i] /= AUDIO_INPUT_NOISE_PROFILE_COUNT;
+        var noiseBuffer2 = new Float32Array(audioInputPrivate.fftSize/2);
+        convolve(audioInputPrivate.noiseBuffer, noiseBuffer2, audioInputPrivate.firstInterestingBin, audioInputPrivate.lastInterestingBin, KERNEL_GAUSSIAN);
+        audioInputPrivate.noiseBuffer = noiseBuffer2;
         clearInterval(audioInputPrivate.noiseCollectInterval);
         audioInputState.status = AUDIO_INPUT_STATUS_READY;
         audioInputState.valid = true;
@@ -83,14 +99,17 @@ function updateAudioInput() {
     if(audioInputState.status == AUDIO_INPUT_STATUS_READY){
         var sample = new Float32Array(audioInputPrivate.fftSize/2);
         audioInputPrivate.analyzer.getFloatFrequencyData(sample);
+        var sample2 = new Float32Array(audioInputPrivate.fftSize/2);
+        convolve(sample, sample2, 0, audioInputPrivate.fftSize/2, KERNEL_GAUSSIAN);
         var weightsNR = new Float32Array(audioInputPrivate.lastInterestingBin);
         for(var i = audioInputPrivate.firstInterestingBin; i < audioInputPrivate.lastInterestingBin; i++){
-            weightsNR[i] = sample[i] - audioInputPrivate.noiseBuffer[i];
+            weightsNR[i] = sample2[i] - audioInputPrivate.noiseBuffer[i];
         }
         var halfLastBin = (audioInputPrivate.lastInterestingBin/2)|0;
         var weights = new Float32Array(halfLastBin);
         for(var i = audioInputPrivate.firstInterestingBin; i < halfLastBin; i++) {
-            weights[i] = weightsNR[i] + 0.5 * weightsNR[2 * i] - 0.5 * weightsNR[(PHI * i) | 0];
+            weights[i] = weightsNR[i] + 0.5 * weightsNR[2 * i] - 0.5 * weightsNR[(PHI * i) | 0] +
+                AUDIO_INPUT_CONSERVATIVE_COEFF * Math.exp(-0.5*(i - audioInputPrivate.lastInterestingBin)*(i - audioInputPrivate.lastInterestingBin)/AUDIO_INPUT_CONSERVATIVE_SIGMA/AUDIO_INPUT_CONSERVATIVE_SIGMA*audioInputPrivate.fftBinSize*audioInputPrivate.fftBinSize);
         }
         var avgWeight = 0;
         var maxWeight = -Infinity;
@@ -103,6 +122,7 @@ function updateAudioInput() {
             }
         }
         avgWeight /= halfLastBin - audioInputPrivate.firstInterestingBin;
+        audioInputPrivate.lastSolution = maxWeightIndex;
         audioInputState.frequency = maxWeightIndex * audioInputPrivate.fftBinSize;
         audioInputState.confidence = maxWeight-avgWeight;
     }
