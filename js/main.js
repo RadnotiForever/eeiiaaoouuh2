@@ -1,5 +1,5 @@
 function MenuState() {
-    var index = 0
+    var index = 0;
     var items = ["Not quite flappy", "Snakish", "Breakout thing"];
     var ready = false;
 
@@ -20,7 +20,7 @@ function MenuState() {
             if (!ready)
                 return;
             if(items[index]=="Not quite flappy") {console.log("pressed flappy"); jaws.switchGameState(FlappyGameState) }
-            if (items[index]=="Snakish") {console.log("pressed snake"); /*jaws.switchGameState(SnakeGameState)*/}
+            if (items[index]=="Snakish") {console.log("pressed snake"); jaws.switchGameState(SnakeState)}
             if (items[index]=="Breakout thing"){
             console.log("pressed breakout");
             jaws.switchGameState(BreakoutGameState)}
@@ -53,6 +53,7 @@ window.onload = function() {
     jaws.assets.add("img/ball.png");
     jaws.assets.add("img/paddle.png");
     jaws.assets.add("img/block.png");
+    jaws.assets.add("img/snakepart2.png");
     jaws.start(MenuState);
 
 }
