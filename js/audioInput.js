@@ -136,7 +136,7 @@ function updateAudioInput() {
         }
         avgWeight /= halfLastBin - audioInputPrivate.firstInterestingBin;
         audioInputPrivate.lastSolution = maxWeightIndex;
-        audioInputState.lastRead = (new Date()).now();
+        audioInputState.lastRead = Date.now();
         audioInputState.frequency = maxWeightIndex * audioInputPrivate.fftBinSize;
         audioInputState.confidence = maxWeight-avgWeight;
         audioInputState.overThreshold = audioInputState.confidence > AUDIO_INPUT_THRESHOLD;
