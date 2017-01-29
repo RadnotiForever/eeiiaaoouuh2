@@ -54,10 +54,10 @@ function audioInputInit2(stream){
     audioInputPrivate.lastInterestingBin = (AUDIO_INPUT_CUTOFF / audioInputPrivate.fftBinSize) | 0;
     audioInputPrivate.analyzer.fftSize = audioInputPrivate.fftSize;
     audioInputPrivate.source.connect(audioInputPrivate.analyzer, 0, 0);
-    audioInputPrivate.zeroGain = audioInputPrivate.context.createGain();
+/*    audioInputPrivate.zeroGain = audioInputPrivate.context.createGain();
     audioInputPrivate.zeroGain.value = 0.0;
     audioInputPrivate.analyzer.connect(audioInputPrivate.zeroGain);
-    audioInputPrivate.zeroGain.connect(audioInputPrivate.context.destination);
+    audioInputPrivate.zeroGain.connect(audioInputPrivate.context.destination);*/
     audioInputPrivate.noiseBuffer = new Float32Array(audioInputPrivate.lastInterestingBin);
     audioInputPrivate.noiseSamples = 0;
     audioInputPrivate.noiseCollectInterval = setInterval(collectNoiseProfiles, AUDIO_INPUT_NOISE_PROFILE_INTERVAL)
@@ -87,21 +87,22 @@ function updateAudioInput() {
         for(var i = audioInputPrivate.firstInterestingBin; i < audioInputPrivate.lastInterestingBin; i++){
             weightsNR[i] = sample[i] - audioInputPrivate.noiseBuffer[i];
         }
-        var weights = new Float32Array(audioInputPrivate.lastInterestingBin/2);
-        for(var i = audioInputPrivate.firstInterestingBin; i < audioInputPrivate.lastInterestingBin/2; i++) {
+        var halfLastBin = (audioInputPrivate.lastInterestingBin/2)|0;
+        var weights = new Float32Array(halfLastBin);
+        for(var i = audioInputPrivate.firstInterestingBin; i < halfLastBin; i++) {
             weights[i] = weightsNR[i] + 0.5 * weightsNR[2 * i] - 0.5 * weightsNR[(PHI * i) | 0];
         }
         var avgWeight = 0;
         var maxWeight = -Infinity;
         var maxWeightIndex = -1;
-        for(var i = audioInputPrivate.firstInterestingBin; i < audioInputPrivate.lastInterestingBin/2; i++) {
+        for(var i = audioInputPrivate.firstInterestingBin; i < halfLastBin; i++) {
             avgWeight += weights[i];
             if(weights[i] > maxWeight){
                 maxWeight = weights[i];
                 maxWeightIndex = i;
             }
         }
-        avgWeight /= audioInputPrivate.lastInterestingBin/2 - audioInputPrivate.firstInterestingBin;
+        avgWeight /= halfLastBin - audioInputPrivate.firstInterestingBin;
         audioInputState.frequency = maxWeightIndex * audioInputPrivate.fftBinSize;
         audioInputState.confidence = maxWeight-avgWeight;
     }
