@@ -17,14 +17,16 @@ var AUDIO_INPUT_NOISE_PROFILE_COUNT = 100;
 var KERNEL_GAUSSIAN = [.006, .061, .242, .382, .242, .061, .006];
 var AUDIO_INPUT_CONSERVATIVE_COEFF = 99999;
 var AUDIO_INPUT_CONSERVATIVE_SIGMA = 200;
-var PHI = (1 + Math.sqrt(2)) / 2;
+var AUDIO_INPUT_THRESHOLD = 35;
+var PHI = (1 + Math.sqrt(5)) / 2;
 
 var audioInputState = {
     status: AUDIO_INPUT_STATUS_LOADING,
     valid: false,
     lastRead: 0,
     confidence: 100,
-    frequency: 440
+    frequency: 440,
+    overThreshold: false
 }
 
 var audioInputPrivate = {};
@@ -125,6 +127,7 @@ function updateAudioInput() {
         audioInputPrivate.lastSolution = maxWeightIndex;
         audioInputState.frequency = maxWeightIndex * audioInputPrivate.fftBinSize;
         audioInputState.confidence = maxWeight-avgWeight;
+        audioInputState.overThreshold = audioInputState.confidence > AUDIO_INPUT_THRESHOLD;
     }
     return audioInputState;
 }
