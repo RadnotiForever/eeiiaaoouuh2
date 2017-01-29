@@ -15,9 +15,9 @@ var AUDIO_INPUT_MINFREQ = 65; // save the americans
 var AUDIO_INPUT_NOISE_PROFILE_INTERVAL = 50;
 var AUDIO_INPUT_NOISE_PROFILE_COUNT = 100;
 var KERNEL_GAUSSIAN = [.006, .061, .242, .382, .242, .061, .006];
-var AUDIO_INPUT_CONSERVATIVE_COEFF = 99999;
+var AUDIO_INPUT_CONSERVATIVE_COEFF = 30;
 var AUDIO_INPUT_CONSERVATIVE_SIGMA = 200;
-var AUDIO_INPUT_THRESHOLD = 35;
+var AUDIO_INPUT_THRESHOLD = 60;
 var PHI = (1 + Math.sqrt(5)) / 2;
 
 var audioInputState = {
@@ -27,7 +27,7 @@ var audioInputState = {
     confidence: 100,
     frequency: 440,
     overThreshold: false
-}
+};
 
 var audioInputPrivate = {};
 
@@ -111,7 +111,7 @@ function updateAudioInput() {
         var weights = new Float32Array(halfLastBin);
         for(var i = audioInputPrivate.firstInterestingBin; i < halfLastBin; i++) {
             weights[i] = weightsNR[i] + 0.5 * weightsNR[2 * i] - 0.5 * weightsNR[(PHI * i) | 0] +
-                AUDIO_INPUT_CONSERVATIVE_COEFF * Math.exp(-0.5*(i - audioInputPrivate.lastInterestingBin)*(i - audioInputPrivate.lastInterestingBin)/AUDIO_INPUT_CONSERVATIVE_SIGMA/AUDIO_INPUT_CONSERVATIVE_SIGMA*audioInputPrivate.fftBinSize*audioInputPrivate.fftBinSize);
+                AUDIO_INPUT_CONSERVATIVE_COEFF * Math.exp(-0.5*(i - audioInputPrivate.lastSolution)*(i - audioInputPrivate.lastSolution)/AUDIO_INPUT_CONSERVATIVE_SIGMA/AUDIO_INPUT_CONSERVATIVE_SIGMA*audioInputPrivate.fftBinSize*audioInputPrivate.fftBinSize);
         }
         var avgWeight = 0;
         var maxWeight = -Infinity;
