@@ -39,9 +39,9 @@ function BreakoutGameState() {
         paddle.v = function() {
             if (audio.confidence > 35) {
                 var l1 = Math.log(1000);
-                var l2 = Math.log(2000);
-                var d = audio.frequency - (l1+l2)/2;
-                d /= (l1-l2)/2;
+                var l2 = Math.log(1700);
+                var d = Math.log(audio.frequency) - (l1+l2)/2;
+                d /= (l2-l1)/2;
                 return d*500;
             }
             else {

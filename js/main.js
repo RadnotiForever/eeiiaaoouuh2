@@ -48,7 +48,6 @@ function MenuState() {
  *
  */
 window.onload = function() {
-    jaws.assets.add("img/ball.png");
     jaws.assets.add("img/flappy_player.png");
     jaws.assets.add("img/flappy_obstacle.png");
     jaws.assets.add("img/ball.png");
