@@ -74,8 +74,9 @@ var SnakeState = function () {
                 snakeParts[0].x = snakeHead.x;
                 snakeParts[0].y = snakeHead.y;
                 input = input * 2 * Math.PI / 360;
+                var tx=snakeHead.vx;
                 snakeHead.vx = Math.cos(input) * snakeHead.vx - Math.sin(input) * snakeHead.vy;
-                snakeHead.vy = Math.cos(input) * snakeHead.vy + Math.sin(input) * snakeHead.vx;
+                snakeHead.vy = Math.cos(input) * snakeHead.vy + Math.sin(input) * tx;
 
                 snakeHead.x += Math.round(snakeHead.vx / ONE_OVER_SPEED * dt);
                 snakeHead.y += Math.round(snakeHead.vy / ONE_OVER_SPEED * dt);
