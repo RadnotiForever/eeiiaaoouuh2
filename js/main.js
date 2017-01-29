@@ -2,8 +2,8 @@ function MenuState() {
 
     var index = 0;
     var items = ["Not so flappy", "Snakish", "Breakout thing", "Calibration"];
+    var title = "EEIIAAOOUUH";
     var ready = false;
-
     this.setup = function() {
 
         /*canvas = document.getElementById("canvas"); //resize canwas to full"screen"
@@ -13,8 +13,8 @@ function MenuState() {
 
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
         index = 0;
-        jaws.on_keydown(["down","s"],       function()  { index++; if(index >= items.length) {index=items.length-1} } )
-        jaws.on_keydown(["up","w"],         function()  { index--; if(index < 0) {index=0} } )
+        jaws.on_keydown(["down","s"],       function()  { if (ready) {index++; if(index >= items.length) {index=items.length-1} } });
+        jaws.on_keydown(["up","w"],         function()  { if (ready) {index--; if(index < 0) {index=0} } });
         jaws.on_keydown(["enter","space"],  function()  {
             console.log("enter pressed");
             if (!ready)
@@ -27,18 +27,35 @@ function MenuState() {
                 jaws.switchGameState(CalibrateState);
             }
         })
-    }
+    };
 
     this.draw = function() {
-        ready = updateAudioInput().valid;
-        jaws.context.clearRect(0,0,jaws.width,jaws.height)
-        for(var i=0; items[i]; i++) {
-            // jaws.context.translate(0.5, 0.5)
-            jaws.context.font = "bold 25pt terminal";
-            jaws.context.lineWidth = 10
-            jaws.context.fillStyle =  (i == index) ? "Red" : "Black"
-            jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"
-            jaws.context.fillText(items[i], 30, 100 + i * 60)
+        jaws.context.clearRect(0,0,jaws.width,jaws.height);
+        jaws.context.font = "bold 25pt terminal";
+        jaws.context.lineWidth = 10;
+        jaws.context.strokeStyle =  "rgba(200,200,200,0.0)";
+        var audio = updateAudioInput();
+        switch (audio.status) {
+            case AUDIO_INPUT_STATUS_REQUESTED:
+                jaws.context.fillText("Please enable microphone input", 5, 240);
+                break;
+            case AUDIO_INPUT_STATUS_WORKING:
+                jaws.context.fillText("Preparing...", 180, 240);
+                break;
+            case AUDIO_INPUT_STATUS_READY:
+                ready = true;
+                jaws.context.font = "bold 50pt terminal";
+                jaws.context.fillStyle = "Blue";
+                jaws.context.fillText(title, 70, 90);
+                for(var i=0; items[i]; i++) {
+                    // jaws.context.translate(0.5, 0.5)
+                    jaws.context.font = "bold 25pt terminal";
+                    jaws.context.lineWidth = 10;
+                    jaws.context.fillStyle =  (i == index) ? "Red" : "Black";
+                    jaws.context.strokeStyle =  "rgba(200,200,200,0.0)";
+                    jaws.context.fillText(items[i], 150, 200 + i * 60);
+                }
+                break;
         }
     }
 }
@@ -52,12 +69,13 @@ function CalibrateState() {
 
     this.setup = function() {
         console.log("starting calibration")
-    }
+    };
 
     this.update = function(){
         time += deltameter.getDeltaTime();
+        var res;
         if (time > 1000 && time < 5000) {
-            var res = updateAudioInput();
+            res = updateAudioInput();
             if (res.overThreshold) {
                 lowc++;
                 lowsum += Math.log(res.frequency);
@@ -65,7 +83,7 @@ function CalibrateState() {
             else lc2++;
         }
         else if (time > 7000 && time < 11000) {
-            var res = updateAudioInput();
+            res = updateAudioInput();
             if (res.overThreshold) {
                 highc++;
                 highsum += Math.log(res.frequency);
@@ -73,7 +91,7 @@ function CalibrateState() {
             else hc2++;
         }
         else if (time > 12000) {
-            var res = updateAudioInput();
+            res = updateAudioInput();
             if (!gotNoise){
                 if (lowc > 30 && highc > 30) {
                     var low = lowsum/lowc;
@@ -87,15 +105,15 @@ function CalibrateState() {
             }
         }
 
-    }
+    };
 
     this.draw = function() {
 
-        jaws.context.clearRect(0,0,jaws.width,jaws.height)
+        jaws.context.clearRect(0,0,jaws.width,jaws.height);
         jaws.context.font = "bold 25pt terminal";
-        jaws.context.lineWidth = 10
-        jaws.context.fillStyle = "Black"
-        jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"
+        jaws.context.lineWidth = 10;
+        jaws.context.fillStyle = "Black";
+        jaws.context.strokeStyle =  "rgba(200,200,200,0.0)";
         if (time < 5000) {
             jaws.context.fillText("Make a low pitched sound", 100, 220);
         }
@@ -130,4 +148,4 @@ window.onload = function() {
     jaws.assets.add("img/snakepart2.png");
     jaws.start(MenuState);
 
-}
+};

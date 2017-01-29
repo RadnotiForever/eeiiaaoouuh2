@@ -48,7 +48,7 @@ var SnakeState = function () {
             if(jaws.pressed("down s"))  { snakeHead.vx = 0 ; snakeHead.vy = 1;}
 
             var input = getAngle();
-            snakeHead.rotate(input);
+            //snakeHead.rotateTo(Math.asin(snakeHead.vy) + input);
             var dt = inputTimer.getDeltaTime();
             if (dt > 50) {
                 dt = 50;
@@ -82,13 +82,14 @@ var SnakeState = function () {
                 snakeHead.y += Math.round(snakeHead.vy / ONE_OVER_SPEED * dt);
                 clampxy();
 
-                if (n-- > 0) snakeParts.push(snakePart(lastx, lasty));
+                if (n > 0) { --n; snakeParts.push(snakePart(lastx, lasty));}
 
                 if (gameOver) return;
                 jaws.collide(snakeHead, pickup, function (a, b) {
                     pickup.x = Math.floor(Math.random() * 600);
                     pickup.y = Math.floor(Math.random() * 480);
                     snakeParts.push(snakePart(lastx, lasty));
+                    n += 8;
                 });
             }
         } else if (jaws.pressedWithoutRepeat("space")) {
@@ -98,14 +99,16 @@ var SnakeState = function () {
 
     this.draw = function() {
         jaws.clear();
-        for (var k in snakeParts) {
+        for (var k = snakeParts.length - 1; k >= 0; --k) {
             snakeParts[k].draw();
         }
         snakeHead.draw();
         pickup.draw();
     };
 
-    this.setup = function() {};
+    this.setup = function() {
+        jaws.on_keydown("esc",  function() { jaws.switchGameState(MenuState) });
+    };
 
 };
 
