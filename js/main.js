@@ -45,7 +45,7 @@ function MenuState() {
                 break;
             case AUDIO_INPUT_STATUS_READY:
                 ready = true;
-                jaws.context.font = "bold 50pt terminal";
+                jaws.context.font = "bold 40pt terminal";
                 jaws.context.fillStyle = "Blue";
                 jaws.context.fillText(title, 70, 90);
                 for(var i=0; items[i]; i++) {
