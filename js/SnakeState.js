@@ -43,16 +43,16 @@ var SnakeState = function () {
     var gameOver = false;
     this.update = function() {
         if (!gameOver) {
-            //if(jaws.pressed("left a"))  { snakeHead.vx = -1 ; snakeHead.vy = 0;}
-            //if(jaws.pressed("right d"))  { snakeHead.vx = 1 ; snakeHead.vy = 0;}
-            //if(jaws.pressed("up w"))  { snakeHead.vx = 0 ; snakeHead.vy = -1;}
-            //if(jaws.pressed("down s"))  { snakeHead.vx = 0 ; snakeHead.vy = 1;}
+            if(jaws.pressed("left a"))  { snakeHead.vx = -1 ; snakeHead.vy = 0;}
+            if(jaws.pressed("right d"))  { snakeHead.vx = 1 ; snakeHead.vy = 0;}
+            if(jaws.pressed("up w"))  { snakeHead.vx = 0 ; snakeHead.vy = -1;}
+            if(jaws.pressed("down s"))  { snakeHead.vx = 0 ; snakeHead.vy = 1;}
 
-            var input = getAngle();
-            snakeHead.rotate(input);
+            //var input = getAngle();
+            //snakeHead.rotate(input);
             var dt = inputTimer.getDeltaTime();
-            if (dt > 100) {
-                dt = 100;
+            if (dt > 25) {
+                dt = 25;
                 inputTimer.reset();
                 var l = snakeParts.length;
                 var oldx = snakeHead.x;
@@ -74,9 +74,9 @@ var SnakeState = function () {
                 }
                 snakeParts[0].x = snakeHead.x;
                 snakeParts[0].y = snakeHead.y;
-                input = input * 2 * Math.PI / 360;
-                snakeHead.vx = Math.cos(input) * snakeHead.vx - Math.sin(input) * snakeHead.vy;
-                snakeHead.vy = Math.cos(input) * snakeHead.vy + Math.sin(input) * snakeHead.vx;
+                //input = input * 2 * Math.PI / 360;
+                //snakeHead.vx = Math.cos(input) * snakeHead.vx - Math.sin(input) * snakeHead.vy;
+                //snakeHead.vy = Math.cos(input) * snakeHead.vy + Math.sin(input) * snakeHead.vx;
 
                 snakeHead.x += Math.round(snakeHead.vx / ONE_OVER_SPEED * dt);
                 snakeHead.y += Math.round(snakeHead.vy / ONE_OVER_SPEED * dt);
@@ -91,6 +91,8 @@ var SnakeState = function () {
                     snakeParts.push(snakePart(lastx, lasty));
                 });
             }
+        } else if (jaws.pressedWithoutRepeat("space")) {
+            jaws.swichGameState(MenuState);
         }
     };
 
