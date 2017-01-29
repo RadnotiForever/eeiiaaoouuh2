@@ -172,8 +172,7 @@ function BreakoutGameState() {
         paddle.draw();
         jaws.draw(blocks);
         jaws.context.font = "bold 25pt terminal";
-        jaws.context.lineWidth = 10
-        ;
+        jaws.context.lineWidth = 10;
         jaws.context.strokeStyle =  "rgba(200,200,200,0.0)"
         if (blocks.length == 0)
         {
