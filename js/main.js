@@ -4,13 +4,13 @@ function MenuState() {
 
     this.setup = function() {
         jaws.preventDefaultKeys(["up", "down", "left", "right", "space"]);
-        index = 0
+        index = 0;
         jaws.on_keydown(["down","s"],       function()  { index++; if(index >= items.length) {index=items.length-1} } )
         jaws.on_keydown(["up","w"],         function()  { index--; if(index < 0) {index=0} } )
         jaws.on_keydown(["enter","space"],  function()  {
             console.log("enter pressed");
             if(items[index]=="Not quite flappy") {/*jaws.switchGameState(FlappyGameState)*/ }
-            if (items[index]=="Snakish") {/*jaws.switchGameState(SnakeGameState)*/}
+            if (items[index]=="Snakish") {jaws.switchGameState(SnakeState)}
             if (items[index]=="Breakout thing"){
             console.log("pressed breakout");
             jaws.switchGameState(/*BreakoutGameState*/)}
@@ -37,6 +37,7 @@ function MenuState() {
  */
 window.onload = function() {
     jaws.assets.add("img/ball.png");
+    jaws.assets.add("img/snakepart2.png");
     jaws.start(MenuState);
 
 }

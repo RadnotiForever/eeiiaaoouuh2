@@ -8,7 +8,7 @@ function DeltaTimeMeter(){
 
     this.getDeltaTime = function() {
         var oldt = lastt;
-        lastt = getTime();
+        lastt = new Date().getTime();
         return lastt - oldt;
     }
 }
